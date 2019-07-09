@@ -13,11 +13,27 @@ namespace ZDIS_Unity.Tool
     /// </summary>
     public abstract class GenClass
     {
+        /// <summary>
+        /// Name of thr Code Generated Class
+        /// </summary>
         protected string m_strClassName = "ZDIS_ClassGenerated";
+        /// <summary>
+        /// Name of the Class File Name
+        /// </summary>
         protected string m_strFileName = string.Empty;
+        /// <summary>
+        /// Name of dir to Save
+        /// </summary>
         protected string m_strDirectoryLocation = string.Empty;
+        /// <summary>
+        /// Namespace to put the Class in!
+        /// </summary>
         protected string m_strNameSpace = string.Empty;
 
+        /// <summary>
+        /// Use to add Header files inside your class
+        /// </summary>
+        /// <param name="a_refBuilder"></param>
         protected virtual void CreateHeaderFiles(ref StringBuilder a_refBuilder)
         {
             a_refBuilder.AppendLine("// ----- ZDIS_Unity_Tool:AUTO GENERATED CODE ----- //");
@@ -31,6 +47,10 @@ namespace ZDIS_Unity.Tool
 
         }
 
+        /// <summary>
+        /// AddNamespaces at the Begining
+        /// </summary>
+        /// <param name="a_refBuilder"></param>
         private void StartNamespace(ref StringBuilder a_refBuilder)
         {
             if (string.IsNullOrEmpty(GetNameSpace()))
@@ -39,6 +59,11 @@ namespace ZDIS_Unity.Tool
             }
             a_refBuilder.AppendLine("namespace " + GetNameSpace() + " {");
         }
+
+        /// <summary>
+        /// Adds closing Bracket for Namespace
+        /// </summary>
+        /// <param name="a_refBuilder"></param>
         private void EndNamespace(ref StringBuilder a_refBuilder)
         {
             if (string.IsNullOrEmpty(GetNameSpace()))
@@ -55,12 +80,22 @@ namespace ZDIS_Unity.Tool
 
         }
 
+        /// <summary>
+        /// Creates the Declaration line for the class
+        /// EG.{public static class} GettClassName() ,where
+        /// the content inside curly bracket can change!
+        /// </summary>
+        /// <returns></returns>
         protected virtual string CreateClassDefinition()
         {
             return ("public  class " + GetClassName());
         }
 
 
+        /// <summary>
+        /// The actually functionwhich creates the Class
+        /// </summary>
+        /// <param name="a_refBuilder"></param>
         public void CreateClass(ref StringBuilder a_refBuilder)
         {
             CreateHeaderFiles(ref a_refBuilder);
@@ -80,10 +115,19 @@ namespace ZDIS_Unity.Tool
 
         }
 
+        /// <summary>
+        /// This is responsible for creating the Body of the class
+        /// </summary>
+        /// <param name="a_refBuilder"></param>
         protected virtual void CreateBody(ref StringBuilder a_refBuilder)
         {
             a_refBuilder.AppendLine("//Hi you did it!");
         }
+
+        /// <summary>
+        /// Logic to do on class creation fail!
+        /// </summary>
+        /// <param name="exp"></param>
         public virtual void OnCreationFail(Exception exp)
         {
             Debug.LogError("[GenClass]:Creation of Class FaileD!,Expection is:" + exp);
@@ -97,7 +141,11 @@ namespace ZDIS_Unity.Tool
         }
 
 
-
+        /// <summary>
+        /// This function responsible for creating the File
+        /// </summary>
+        /// <param name="a_bClearPrevContent">overwrite previous Contents!</param>
+        /// <returns></returns>
         public virtual bool CreateFile(bool a_bClearPrevContent = true)
         {
             bool temp_bResult = false;
@@ -146,19 +194,49 @@ namespace ZDIS_Unity.Tool
         //..These abstract function can be used so that we dont actually need a param constructor
         //for the inherited one ,even though one can do the same
         //Returns the full path of the with File Name
+
+        /// <summary>
+        /// Retuns the Namespace for this Class
+        /// </summary>
+        /// <returns></returns>
         public abstract string GetNameSpace();
+
+        /// <summary>
+        /// Gets complete the file path for this class.
+        /// It uses other abstracts to stich and create the Name!
+        /// </summary>
+        /// <returns></returns>
         public virtual string GetFilePath()
         {
             string temp_strFileFullPath = System.IO.Path.Combine(Application.dataPath, GetFileDirectory());
             string temp_strFileNameFullPath = Path.Combine(temp_strFileFullPath, GetFileName());
             return temp_strFileNameFullPath;
         }
+
+        /// <summary>
+        /// REturns the FileName for the class
+        /// </summary>
+        /// <returns></returns>
         public abstract string GetFileName();
+
+        /// <summary>
+        /// Returns the Directory location of the class
+        /// </summary>
+        /// <returns></returns>
         public abstract string GetFileDirectory();
+        /// <summary>
+        /// Get the Specified Class Name
+        /// </summary>
+        /// <returns></returns>
         public abstract string GetClassName();
 
     }
 
+
+    /// <summary>
+    /// A example class to show how Genclass should be inherted 
+    /// and used!
+    /// </summary>
     public class SampleGenClass : GenClass
     {
         public SampleGenClass(string a_strClassName, string a_strFileName, string a_strDirectoryLocation)
@@ -200,26 +278,32 @@ namespace ZDIS_Unity.Tool
     /// </summary>
     public class ClassGenerator
     {
-        #region CREATION_FUNC
+        #region Helper_func
+        //some utils functions...
 
-        
 
         public static string WrapToString(string a_strContent)
         {
             return string.Format(" \" {0} \" ", a_strContent);
         }
-
         public static string WrapToString(int a_strContent)
         {
             return string.Format(" \" {0} \" ", a_strContent);
         }
-
         public static string WrapToString(float a_strContent)
         {
             return string.Format(" \" {0} \" ", a_strContent);
         }
-        #endregion CREATION_FUNC
+        #endregion Helper_func
 
+        #region CREATION_FUNC
+
+        #endregion CREATION_FUNC
+        /// <summary>
+        /// This functions creates the File as specified by the GenClass!
+        /// Use this to create Any time of Gen class
+        /// </summary>
+        /// <param name="a_refGenClass"></param>
         public static void CreateGenClass(GenClass a_refGenClass)
         {
             //Do the file creation logic here?
